@@ -16,6 +16,7 @@
                     required
                     :disabled="voteQuestion.length>=80"
                     v-on:input="handleChange"
+                    test-data-id="question-input"
                 ></v-text-field>
                 <AddOptions @addedOptions="updatedOptions" @resetQues="resetQuestion"></AddOptions>
               </v-col>

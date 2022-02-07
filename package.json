@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "test": "testcafe chrome .\\test\\**\\app.cspec.js --app \"npm run serve\" --app-init-delay 10000 -S -s screenshots"
   },
   "dependencies": {
     "core-js": "^3.6.5",
@@ -22,6 +23,7 @@
     "eslint-plugin-vue": "^6.2.2",
     "sass": "~1.32.0",
     "sass-loader": "^10.0.0",
+    "testcafe": "^1.18.3",
     "vue-cli-plugin-vuetify": "~2.4.5",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.7.0"

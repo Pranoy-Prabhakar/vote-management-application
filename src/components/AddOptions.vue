@@ -3,7 +3,7 @@
     <v-col cols="12" v-for="(input, index) in options" :key="`option-${index}`">
       <v-input >
         <v-row>
-          <v-col cols="9" class="pa-0">
+          <v-col cols="8" class="pa-0">
             <v-text-field
                 v-model="input.option"
                 label="Option"
@@ -15,50 +15,54 @@
                 :disabled="input.option.length>=80"
             ></v-text-field>
           </v-col>
-          <v-col col="3" class="ma-auto align-center" >
+          <v-col col="4" class="ma-auto align-center" >
 
             <v-btn
-                v-show="!showAddButton"
-                fab
-                dark
-                small
-                color="pink"
-                :id="`remove-button-${index}`"
-                :test-data-id="`remove-option-${index}`"
-                @click="removeOption(index, options)"
-            >
-              <v-icon dark>
-                mdi-minus
-              </v-icon>
-            </v-btn>
-
-            <v-btn
-                v-show="showAddButton"
                 fab
                 dark
                 small
                 color="teal"
                 :id="`add-button-${index}`"
                 :test-data-id="`add-option-${index}`"
-                @click="addOption(input, options, index)"
+                @click="addOption(input, index)"
+                :style="input.plus"
+                class="mr-4"
             >
               <v-icon dark>
                 mdi-plus
               </v-icon>
             </v-btn>
-
+            
+            <v-btn
+                fab
+                dark
+                small
+                color="pink"
+                :id="`remove-button-${index}`"
+                :test-data-id="`remove-option-${index}`"
+                @click="removeOption(index)"
+                :style="input.minus"
+            >
+              <v-icon dark>
+                mdi-minus
+              </v-icon>
+            </v-btn>
 
           </v-col>
         </v-row>
       </v-input>
     </v-col>
-    <v-col col="12" v-if="showMaximumOptionAddedFalg">
-      <span>You can only add 10 options</span>
+    <v-col cols="9" v-if="showDuplicateOptionFlag" class="" >
+      <span style="color: red">Option already exist Please try another option</span>
     </v-col>
-    <v-col col="12" v-if="!showMaximumOptionAddedFalg">
-      <span>{{optionCount}}/10 Possible Answer</span>
-    </v-col>
-    <v-col col="4">
+    <v-row>
+      <v-col col="12" v-if="showMaximumOptionAddedFalg">
+        <span>You can only add 10 options</span>
+      </v-col>
+      <v-col col="12" v-if="!showMaximumOptionAddedFalg">
+        <span>{{optionCount}}/10 Possible Answer</span>
+      </v-col>
+      <v-col col="4">
       <span><v-btn
           rounded
           color="primary"
@@ -67,7 +71,8 @@
       >
       reset
     </v-btn></span>
-    </v-col>
+      </v-col>
+    </v-row>
   </v-row>
 
 </template>
@@ -75,17 +80,22 @@
 <script>
 export default {
   name: "AddOptions",
-  props: {
-    option: String,
-  },
-
   data() {
     return {
       showAddButton: true,
       showMaximumOptionAddedFalg: false,
-      options: [{
-        option: '',
-      }],
+      showDuplicateOptionFlag:false,
+      options: [
+        {
+          option: '',
+          minus:{
+            display:'none',
+          },
+          plus:{
+            display:'inline-block',
+          },
+        },
+      ],
       optionCount: 0,
       optionRules: [
         v => !!v || 'Option is required',
@@ -96,53 +106,75 @@ export default {
   computed: {
   },
   methods:{
-    addOption: async function (value, optionData, index) {
+    addOption: async function (value, index) {
       if(value.option !=="" && value.option !== undefined){
-        document.getElementById(`add-button-${index}`).style.display="none";
-        document.getElementById(`remove-button-${index}`).style.display = 'block'
-        document.getElementById(`remove-button-${index}`).style.float = ''
-        if(index<9){
-          this.showMaximumOptionAddedFalg = false;
-          optionData.push({
-            option: ''
-          })
-          this.optionCount++
+        if(this.options.filter(val => val.option == value.option).length >1 ){
+          this.showDuplicateOptionFlag = true;
         }else{
-          this.showMaximumOptionAddedFalg = true;
+          this.showDuplicateOptionFlag = false
+          const obj = [...this.options]
+          obj[index].plus.display = 'none'
+          obj[index].minus.display = 'inline-block'
+          this.options = [...obj]
+          if(index<9){
+            this.showMaximumOptionAddedFalg = false;
+            this.options.push({
+              option: '',
+              minus:{
+                display:'none',
+              },
+              plus:{
+                display:'inline-block',
+              }})
+            this.optionCount++
+          }else{
+            this.showMaximumOptionAddedFalg = true;
+          }
+          await this.$emit('addedOptions',this.options)
         }
       }
-      await this.$emit('addedOptions',optionData)
+      // const optionData = this.options.map(val => {return {option:val.option}})
     },
-    removeOption: async function ( index, optionData) {
-      this.optionCount--
-      optionData.splice(index, 1)
-      if(index<=1){
-        document.getElementById(`add-button-${index}`).style.display="none";
-        document.getElementById(`remove-button-${index}`).style.display = 'block'
-        document.getElementById(`remove-button-${index}`).style.float = ''
-        document.getElementById(`add-button-${this.optionCount}`).style.display="block";
-        document.getElementById(`remove-button-${this.optionCount}`).style.display = 'none'
-      }else if(index === this.optionCount+1){
-        console.log('inside last element delete')
-        document.getElementById(`add-button-${index-1}`).style.display="block";
-        document.getElementById(`remove-button-${index-1}`).style.display = 'block'
-        document.getElementById(`remove-button-${index-1}`).style.float = 'right'
-      }else{
-        console.log('other element delete')
-        document.getElementById(`add-button-${this.optionCount}`).style.display="block";
-        document.getElementById(`remove-button-${this.optionCount}`).style.display = 'none'
+    removeOption: async function (index) {
+      const obj = [...this.options]
+      console.log(obj)
+      if(index===0 && this.optionCount === 0){
+        obj[index].plus.display = 'inline-block'
+        obj[index].minus.display = 'none'
+
+      }else if(index===0 && this.optionCount===1) {
+        obj[index+1].plus.display = 'inline-block'
+        obj[index+1].minus.display = 'none'
+        obj.splice(index,1)
       }
-      await this.$emit('addedOptions',optionData)
+      else if(index === this.optionCount && index !== 1){
+        obj[index-1].plus.display = 'inline-block'
+        obj[index-1].minus.display = 'inline-block'
+        obj.splice(index,1)
+      }else if(index===1 && this.optionCount === 1){
+        obj[index-1].plus.display = 'inline-block'
+        obj[index-1].minus.display = 'none'
+        obj.splice(index,1)
+      }else {
+        obj.splice(index,1)
+      }
+      this.options = [...obj]
+      // const optionData = this.options.map(val => {return {option:val.option}})
+      await this.$emit('addedOptions',this.options)
+      this.optionCount--
     },
     reset: function(){
       this.showAddButton = true
       this.options=[]
       this.optionCount =0
       this.options.push({
-        option: ''
-      })
-      document.getElementById(`add-button-${this.optionCount}`).style.display="block";
-      document.getElementById(`remove-button-${this.optionCount}`).style.display = 'none'
+        option: '',
+        minus:{
+          display:'none',
+        },
+        plus:{
+          display:'inline-block',
+        }})
       this.$emit('addedOptions',this.options)
       this.$emit('resetQues',true)
     }

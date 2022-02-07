@@ -1,19 +1,21 @@
 <template>
   <v-card light color="background" elevation="3" outlined shaped>
-    <v-card-title class="justify-center">{{question}}</v-card-title>
+    <v-card-title class="justify-center" test-data-id="vote-question">{{question}}</v-card-title>
 
     <v-card-text class="px-5">
       <v-radio-group v-model="selectedValue">
         <v-radio
             v-for="(input, index) in options" :key="`option-${index}`" :label="input.option"
-            :value="input.option"
+            :value="input.option" :test-data-id="`option-vote-${index}`"
         ></v-radio>
       </v-radio-group>
       <v-btn rounded
              color="primary"
              dark
              large
-             v-show="flag" @click=getAnswer>
+             v-show="flag"
+             test-data-id="vote-button"
+             @click=getAnswer>
         vote
       </v-btn>
       <span v-show="!flag">Please select an option to vote</span>

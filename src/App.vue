@@ -6,7 +6,7 @@
       dark
     >
       <div class="d-flex v-responsive__content justify-center text-justify align-center">
-        <div class="display-1" test-id="title">Sir Vote-a-lot</div>
+        <div class="display-1" test-data-id="title">Sir Vote-a-lot</div>
       </div>
     </v-app-bar>
     <v-main>
