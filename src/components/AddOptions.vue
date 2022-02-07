@@ -114,8 +114,6 @@ export default {
       await this.$emit('addedOptions',optionData)
     },
     removeOption: async function ( index, optionData) {
-      console.log(index)
-      console.log(this.optionCount)
       this.optionCount--
       optionData.splice(index, 1)
       if(index<=1){

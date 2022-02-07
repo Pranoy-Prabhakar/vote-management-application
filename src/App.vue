@@ -16,7 +16,7 @@
             <CreatePoll @question="setQuestion" @options = "setOptions"></CreatePoll>
           </v-col>
           <v-col cols="4" v-if="options.length>1 && question!== '' && question!== undefined">
-            <DisplayPoll :options="options" :question="question" @votereport="getVoteReportData"></DisplayPoll>
+            <DisplayPoll :options="options" :question="question" :resetCounter="resetCounter" @resetCounterUpdate="updateResetCounter" @votereport="getVoteReportData"></DisplayPoll>
           </v-col>
           <v-col cols="4" v-if="reportData.length>1">
             <DisplayResult :chartData="reportData" :question="question"></DisplayResult>
@@ -44,13 +44,15 @@ export default {
   data: () => ({
     question: '',
     options: [],
-    reportData:[]
+    reportData:[],
+    resetCounter: false,
   }),
   methods: {
     setOptions: function (value){
       this.options = value
       this.options = this.options.filter(x => x.option !== '')
       this.reportData=[]
+      this.resetCounter = true
     },
     setQuestion: function (value){
       this.question = value
@@ -58,6 +60,9 @@ export default {
     },
     getVoteReportData: function(value){
       this.reportData = value
+    },
+    updateResetCounter: function (value){
+      this.resetCounter = value
     }
   }
 };

@@ -9,9 +9,14 @@
             :value="input.option"
         ></v-radio>
       </v-radio-group>
-      <v-btn @click=getAnswer>
+      <v-btn rounded
+             color="primary"
+             dark
+             large
+             v-show="flag" @click=getAnswer>
         vote
       </v-btn>
+      <span v-show="!flag">Please select an option to vote</span>
     </v-card-text>
   </v-card>
 </template>
@@ -25,6 +30,7 @@ export default {
       type: Array
     },
     question: String,
+    resetCounter: Boolean,
   },
   data() {
     return{
@@ -33,15 +39,28 @@ export default {
       votedValues:[],
       votedMap:[],
       sampleData: [],
+      counter:0,
+      lastOptions:[],
+      // flag: true,
     }
   },
   computed:{
+    flag: function (){
+        return this.selectedValue.length>0
+      }
       },
   methods:{
     getAnswer: function(){
+      if(this.resetCounter){
+        this.totalVotes=0
+      }
+      if(this.totalVotes==0){
+        this.votedValues=[]
+        this.votedMap = []
+        this.sampleData=[]
+      }
       this.totalVotes++;
       this.votedValues.push(this.selectedValue)
-        console.log(this.votedValues)
       this.votedMap = this.votedValues.reduce(function(prev, cur) {
         prev[cur] = (prev[cur] || 0) + 1;
         return prev;
@@ -51,10 +70,11 @@ export default {
       this.sampleData.push(["options","vote"])
       tempVal.forEach(i=> this.sampleData.push(i))
       this.$emit("votereport",this.sampleData)
+      this.$emit("resetCounterUpdate", false)
+      this.selectedValue = ''
     },
-    updatedAnswer: function(){
-      this.sampleData.push(["options","vote"])
-      this.$emit("votereport",this.sampleData)
+    showButton: function(){
+      console.log(this.selectedValue)
     }
   }
 }
