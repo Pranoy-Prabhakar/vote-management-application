@@ -33,6 +33,15 @@ The application is a single page application which is divided in three sections.
 - Writing automated tests is a plus.
 - You must provide a README.md file with instructions
 
+## Assumptions
+
+As the above information were high level, I have made below assumption
+
+- The Addition of the options can only be possible at the end
+- user can delete or edit the options from the list
+- option must not be a duplicate, in case user enters flash the message on the screen
+- Changing the options or question will remove the chart report
+
 ## Project setup
 ```
 npm install
